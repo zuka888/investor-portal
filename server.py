@@ -19,7 +19,7 @@ admin_sids = set()
 # ── Static pages ──────────────────────────────────────────────────
 @app.route('/')
 def payment():
-    return send_from_directory('.', 'index.html')
+   return send_from_directory('.', 'payment.html')
 
 @app.route('/admin')
 def admin():
