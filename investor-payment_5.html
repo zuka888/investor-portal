@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Investor Portal – Payment</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1a1a2e}
+
+.layout{display:grid;grid-template-columns:1fr 1fr;height:100vh}
+
+/* ═══════════════════════════════════════
+   LEFT — exact same palette as right
+═══════════════════════════════════════ */
+.left{
+  background:#f4f5fb;        /* same as right bg */
+  padding:2.5rem 2.5rem;
+  display:flex;flex-direction:column;
+  height:100vh;overflow-y:auto;
+}
+
+/* logo */
+.logo-bar{display:flex;align-items:center;gap:10px;margin-bottom:1.75rem}
+.logo-icon{width:38px;height:38px;border-radius:10px;background:#7181df;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-icon svg{display:block}
+.logo-text{font-size:17px;font-weight:700;color:#1a1a2e}
+.logo-sub{font-size:11px;color:#9999bb;margin-top:1px}
+
+/* headline */
+.left-headline{font-size:22px;font-weight:700;color:#1a1a2e;line-height:1.3;margin-bottom:.5rem}
+.left-sub{font-size:13px;color:#7777aa;line-height:1.7;margin-bottom:1.5rem}
+
+/* ── white card — exactly like .card on the right ── */
+.l-card{
+  background:#fff;
+  border:1px solid #e0e1f0;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 2px 20px rgba(113,129,223,.08);
+  margin-bottom:1rem;
+}
+.l-card-header{
+  padding:1.1rem 1.5rem 1rem;
+  border-bottom:1px solid #e8e9f3;
+  display:flex;align-items:center;gap:8px;
+}
+.l-card-header h2{font-size:14px;font-weight:700;color:#1a1a2e;flex:1}
+.l-card-header span{font-size:11px;color:#aaa}
+.l-card-body{padding:1.1rem 1.5rem}
+
+/* section label — same as right */
+.section-label{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#aaa;margin-bottom:.6rem;margin-top:1.1rem}
+.section-label:first-child{margin-top:0}
+
+/* stats grid inside card */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat-item{background:#f9f9fc;border:1px solid #e8e9f3;border-radius:10px;padding:.875rem 1rem}
+.stat-value{font-size:20px;font-weight:700;color:#7181df;margin-bottom:3px}
+.stat-label{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.07em}
+
+/* divider — same as right */
+.divider{height:1px;background:#e8e9f3;margin:.9rem 0}
+
+/* feature rows */
+.feature-list{list-style:none}
+.feature-list li{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:.65rem 0;border-bottom:1px solid #e8e9f3;
+  font-size:13px;color:#555577;line-height:1.5;
+}
+.feature-list li:last-child{border-bottom:none}
+.feat-icon{
+  width:26px;height:26px;border-radius:7px;
+  background:rgba(113,129,223,.1);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.feat-icon svg{display:block}
+
+/* tabs — styled like section-label / divider language */
+.doc-tabs{display:flex;gap:0;border-bottom:1px solid #e8e9f3;margin-bottom:1rem}
+.doc-tab{
+  padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;
+  background:transparent;border:none;color:#aaa;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:color .15s,border-color .15s;
+}
+.doc-tab:hover{color:#7181df}
+.doc-tab.active{color:#7181df;border-bottom-color:#7181df}
+.doc-panel{display:none}
+.doc-panel.active{display:block}
+.doc-panel h3{
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:#aaa;margin-bottom:.4rem;margin-top:.85rem;
+}
+.doc-panel h3:first-child{margin-top:0}
+.doc-panel p,.doc-panel li{font-size:12.5px;color:#7777aa;line-height:1.7}
+.doc-panel ul{padding-left:1rem;margin-bottom:.4rem}
+
+/* footer */
+.left-footer{
+  margin-top:auto;padding-top:1rem;
+  border-top:1px solid #e8e9f3;
+  font-size:11px;color:#bbbbd0;line-height:1.6;
+}
+
+/* ═══════════════════════════════════════
+   RIGHT — unchanged
+═══════════════════════════════════════ */
+.right{
+  background:#f4f5fb;
+  padding:3rem 2.5rem;
+  display:flex;flex-direction:column;align-items:center;
+  height:100vh;overflow-y:auto;
+}
+.right-inner{width:100%;max-width:480px}
+
+/* Stepper */
+.stepper{display:flex;align-items:center;margin-bottom:2rem}
+.step{display:flex;align-items:center;gap:7px}
+.step-num{width:24px;height:24px;border-radius:50%;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step.done .step-num,.step.active .step-num{background:#7181df;color:#fff}
+.step.inactive .step-num{background:#e8e9f3;color:#9999bb;border:1px solid #d0d1e8}
+.step-label{font-size:13px}
+.step.active .step-label{font-weight:600;color:#1a1a2e}
+.step.done .step-label{color:#7181df}
+.step.inactive .step-label{color:#aaa}
+.step-line{flex:1;height:1px;background:#d0d1e8;margin:0 10px}
+.step-line.done{background:#7181df}
+
+/* Card */
+.card{background:#fff;border:1px solid #e0e1f0;border-radius:16px;width:100%;overflow:hidden;box-shadow:0 2px 20px rgba(113,129,223,.08)}
+.card-header{padding:1.5rem 1.75rem 1.25rem;border-bottom:1px solid #e8e9f3}
+.card-header h1{font-size:20px;font-weight:700;margin-bottom:4px;color:#1a1a2e}
+.card-header p{font-size:13px;color:#7777aa}
+.card-body{padding:1.5rem 1.75rem}
+
+.r-section-label{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#aaa;margin-bottom:.6rem;margin-top:1.25rem}
+.r-section-label:first-child{margin-top:0}
+
+.plan-pills{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.pill{border:1.5px solid #e0e1f0;border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;user-select:none}
+.pill:hover{border-color:#7181df;background:#f7f8ff}
+.pill.active{border-color:#7181df;background:rgba(113,129,223,.08)}
+.pill-amount{font-size:15px;font-weight:700;color:#1a1a2e}
+.pill-label{font-size:11px;color:#9999bb;margin-top:3px}
+
+.field{margin-bottom:.9rem}
+.field label{display:block;font-size:13px;color:#555577;margin-bottom:5px;font-weight:500}
+.field input,.field select{width:100%;height:40px;background:#f9f9fc;border:1px solid #ddddf0;border-radius:8px;padding:0 12px;font-size:14px;color:#1a1a2e;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s;appearance:none}
+.field input:focus,.field select:focus{border-color:#7181df;box-shadow:0 0 0 3px rgba(113,129,223,.14);background:#fff}
+.field input::placeholder{color:#bbbbd0}
+
+.select-wrap{position:relative}
+.select-wrap select{padding-right:32px;cursor:pointer}
+.select-arrow{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none}
+
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.amount-wrap{position:relative}
+.amount-prefix{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:600;color:#7777aa;pointer-events:none}
+.amount-wrap input{padding-left:24px}
+
+.icon-wrap{position:relative}
+.icon-wrap input{padding-right:38px}
+.field-icon{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:#bbbbd0;pointer-events:none}
+.field-icon svg{display:block}
+
+.r-divider{height:1px;background:#e8e9f3;margin:1.25rem 0}
+
+.submit-btn{width:100%;height:46px;background:#7181df;border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:1.5rem;transition:background .15s,transform .1s}
+.submit-btn:hover{background:#5c6ed4}
+.submit-btn:active{transform:scale(.99)}
+
+.secure-note{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:.75rem;font-size:12px;color:#aaa}
+.terms-note{font-size:12px;color:#bbb;text-align:center;margin-top:.6rem;line-height:1.6}
+.terms-note a{color:#7181df;text-decoration:none}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a2e;color:#fff;padding:.65rem 1.25rem;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:860px){
+  html,body{overflow:auto}
+  .layout{grid-template-columns:1fr;height:auto}
+  .left,.right{height:auto;overflow:visible;padding:2rem 1.5rem}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ══ LEFT ══ -->
+  <div class="left">
+
+    <div class="logo-bar">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" fill="white" opacity=".9"/>
+          <path d="M12 7v10M7.5 9.5l4.5 3 4.5-3" stroke="rgba(113,129,223,.65)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">Investor Portal</div>
+        <div class="logo-sub">Secure Investment Platform</div>
+      </div>
+    </div>
+
+    <p class="left-headline">Grow your wealth with confidence</p>
+    <p class="left-sub">Join thousands of investors building long-term financial security through diversified, professionally managed portfolios protected by industry-leading security standards.</p>
+
+    <!-- Stats card -->
+    <div class="l-card">
+      <div class="l-card-header">
+        <h2>Platform overview</h2>
+        <span>Live metrics</span>
+      </div>
+      <div class="l-card-body">
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value">$2.4B+</div>
+            <div class="stat-label">Assets managed</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">18,000+</div>
+            <div class="stat-label">Active investors</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">12.4%</div>
+            <div class="stat-label">Avg. annual return</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">9 yrs</div>
+            <div class="stat-label">Track record</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features card -->
+    <div class="l-card">
+      <div class="l-card-header">
+        <h2>Why investors choose us</h2>
+      </div>
+      <div class="l-card-body">
+        <ul class="feature-list">
+          <li>
+            <div class="feat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7181df" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <span><strong style="color:#1a1a2e">Regulated &amp; Insured</strong> — Held with SEC-registered custodians, protected up to $500,000 via SIPC.</span>
+          </li>
+          <li>
+            <div class="feat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7181df" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <span><strong style="color:#1a1a2e">Real-time performance</strong> — Monitor your portfolio value, returns, and asset allocation 24/7.</span>
+          </li>
+          <li>
+            <div class="feat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7181df" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <span><strong style="color:#1a1a2e">No hidden fees</strong> — Flat 0.5% annual management fee. No entry fees or exit penalties.</span>
+          </li>
+          <li>
+            <div class="feat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7181df" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+            <span><strong style="color:#1a1a2e">Dedicated advisor</strong> — Investors with $5,000+ get a personal advisor and quarterly review.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Legal docs card -->
+    <div class="l-card">
+      <div class="l-card-header">
+        <h2>Legal documents</h2>
+        <span>Please review before submitting</span>
+      </div>
+      <div class="l-card-body">
+        <div class="doc-tabs">
+          <button class="doc-tab active" onclick="switchTab('policy',event)">Investment Policy</button>
+          <button class="doc-tab" onclick="switchTab('terms',event)">Terms of Service</button>
+        </div>
+
+        <div class="doc-panel active" id="tab-policy">
+          <h3>Risk disclosure</h3>
+          <p>All investments involve risk. Past performance is not indicative of future results. The value of your investment may go down as well as up. You may receive back less than you invest.</p>
+          <h3>Investment strategy</h3>
+          <p>Funds are allocated across global equities, fixed income, REITs, and alternatives based on your risk profile:</p>
+          <ul>
+            <li>Starter ($1,000–$4,999) — Conservative balanced portfolio</li>
+            <li>Growth ($5,000–$24,999) — Moderate growth allocation</li>
+            <li>Premium ($25,000+) — Actively managed, full access</li>
+          </ul>
+          <h3>Withdrawals &amp; liquidity</h3>
+          <p>Funds may be withdrawn at any time with no penalties. Standard processing is 3–5 business days. Premium investors have access to same-day wire transfers.</p>
+        </div>
+
+        <div class="doc-panel" id="tab-terms">
+          <h3>Eligibility</h3>
+          <p>You must be at least 18 years of age and a legal resident of an eligible jurisdiction. By proceeding you confirm you are not a restricted person under applicable securities law.</p>
+          <h3>Account &amp; data</h3>
+          <p>Your personal data is processed per GDPR / CCPA. We use 256-bit AES encryption and TLS 1.3 for all transmissions. We never sell your data to third parties.</p>
+          <h3>Disputes &amp; governing law</h3>
+          <p>These terms are governed by Delaware law. Disputes shall be resolved through binding arbitration. You waive the right to class action lawsuits.</p>
+          <h3>Modifications</h3>
+          <p>We may update these terms with 30 days written notice via email. Continued use constitutes acceptance.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="left-footer">
+      &copy; 2026 Investor Portal Inc. &middot; SEC-registered investment adviser &middot; SIPC member<br>
+      Registration does not imply endorsement or a certain level of skill.
+    </div>
+  </div>
+
+  <!-- ══ RIGHT ══ -->
+  <div class="right">
+    <div class="right-inner">
+
+      <div class="stepper">
+        <div class="step done">
+          <div class="step-num"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="step-label">Account</span>
+        </div>
+        <div class="step-line done"></div>
+        <div class="step active">
+          <div class="step-num">2</div>
+          <span class="step-label">Investment</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step inactive">
+          <div class="step-num">3</div>
+          <span class="step-label">Confirm</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h1>Investment details</h1>
+          <p>Enter your investment amount and payment information</p>
+        </div>
+        <div class="card-body">
+
+          <div class="r-section-label">Investment amount</div>
+          <div class="plan-pills">
+            <div class="pill active" onclick="selectPill(this,'1000')">
+              <div class="pill-amount">$1,000</div>
+              <div class="pill-label">Starter</div>
+            </div>
+            <div class="pill" onclick="selectPill(this,'5000')">
+              <div class="pill-amount">$5,000</div>
+              <div class="pill-label">Growth</div>
+            </div>
+            <div class="pill" onclick="selectPill(this,'25000')">
+              <div class="pill-amount">$25,000</div>
+              <div class="pill-label">Premium</div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="custom-amount">Custom amount</label>
+            <div class="amount-wrap">
+              <span class="amount-prefix">$</span>
+              <input type="number" id="custom-amount" placeholder="0.00" min="1" oninput="clearPills()"/>
+            </div>
+          </div>
+
+          <div class="r-divider"></div>
+          <div class="r-section-label">Investor information</div>
+          <div class="row">
+            <div class="field">
+              <label for="fname">First name</label>
+              <input type="text" id="fname" placeholder="Jane" autocomplete="given-name"/>
+            </div>
+            <div class="field">
+              <label for="lname">Last name</label>
+              <input type="text" id="lname" placeholder="Smith" autocomplete="family-name"/>
+            </div>
+          </div>
+          <div class="field">
+            <label for="email">Email address</label>
+            <input type="email" id="email" placeholder="jane@example.com" autocomplete="email"/>
+          </div>
+          <div class="field">
+            <label for="investor-type">Investor type</label>
+            <div class="select-wrap">
+              <select id="investor-type">
+                <option value="">Select type</option>
+                <option>Individual investor</option>
+                <option>Institutional investor</option>
+                <option>Family office</option>
+                <option>Corporate entity</option>
+              </select>
+              <span class="select-arrow"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="#aaa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+
+          <div class="r-divider"></div>
+          <div class="r-section-label">Payment details</div>
+          <div class="field">
+            <label for="card-num">Card number</label>
+            <div class="icon-wrap">
+              <input type="text" id="card-num" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCard(this)" autocomplete="cc-number" inputmode="numeric"/>
+              <span class="field-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="expiry">Expiry date</label>
+              <input type="text" id="expiry" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)" autocomplete="cc-exp" inputmode="numeric"/>
+            </div>
+            <div class="field">
+              <label for="cvv">CVV</label>
+              <div class="icon-wrap">
+                <input type="text" id="cvv" placeholder="123" maxlength="4" autocomplete="cc-csc" inputmode="numeric"/>
+                <span class="field-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="card-name">Name on card</label>
+            <input type="text" id="card-name" placeholder="Jane Smith" autocomplete="cc-name"/>
+          </div>
+
+          <button class="submit-btn" onclick="handleSubmit()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Submit investment
+          </button>
+
+          <div class="secure-note">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            256-bit SSL encryption &middot; PCI DSS compliant
+          </div>
+          <p class="terms-note">
+            By submitting you agree to our
+            <a href="#" onclick="switchTab('terms',event);document.querySelector('.left').scrollTop=9999;return false">Terms of Service</a>
+            and
+            <a href="#" onclick="switchTab('policy',event);document.querySelector('.left').scrollTop=9999;return false">Investment Policy</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function selectPill(el,val){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('custom-amount').value=val;
+}
+function clearPills(){document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'))}
+function formatCard(el){let v=el.value.replace(/\D/g,'').substring(0,16);el.value=v.replace(/(.{4})/g,'$1 ').trim()}
+function formatExpiry(el){let v=el.value.replace(/\D/g,'');if(v.length>=3)v=v.substring(0,2)+' / '+v.substring(2,4);else if(v.length===2&&el.value.length===2)v=v+' / ';el.value=v}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
+function switchTab(tab,e){
+  if(e)e.preventDefault();
+  document.querySelectorAll('.doc-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.doc-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  const btn=document.querySelector('.doc-tab[onclick*="\''+tab+'\'"]');
+  if(btn)btn.classList.add('active');
+}
+function handleSubmit(){
+  const amount=document.getElementById('custom-amount').value;
+  const fname=document.getElementById('fname').value.trim();
+  const lname=document.getElementById('lname').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const type=document.getElementById('investor-type').value;
+  const card=document.getElementById('card-num').value.replace(/\s/g,'');
+  const expiry=document.getElementById('expiry').value;
+  const cvv=document.getElementById('cvv').value;
+  if(!amount||parseFloat(amount)<=0){showToast('Please enter an investment amount.');return}
+  if(!fname||!lname){showToast('Please enter your full name.');return}
+  if(!email||!email.includes('@')){showToast('Please enter a valid email.');return}
+  if(!type){showToast('Please select an investor type.');return}
+  if(card.length<15){showToast('Please enter a valid card number.');return}
+  if(!expiry||expiry.length<7){showToast('Please enter a valid expiry date.');return}
+  if(!cvv||cvv.length<3){showToast('Please enter a valid CVV.');return}
+  showToast('✓ Investment submitted successfully!');
+}
+</script>
+</body>
+</html>
