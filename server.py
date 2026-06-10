@@ -2,7 +2,7 @@ import uuid, time, os
 from flask import Flask, send_from_directory, jsonify
 from flask_socketio import SocketIO, emit, join_room
 
-app = Flask(__name__, static_folder='public')
+app = Flask(__name__, static_folder='.')
 socketio = SocketIO(app, cors_allowed_origins=[
     'https://investor-portal-production.up.railway.app',
     'https://xddobsobd.netlify.app',
@@ -19,11 +19,11 @@ admin_sids = set()
 # ── Static pages ──────────────────────────────────────────────────
 @app.route('/')
 def payment():
-    return send_from_directory('public', 'payment.html')
+    return send_from_directory('.', 'index.html')
 
 @app.route('/admin')
 def admin():
-    return send_from_directory('public', 'admin.html')
+    return send_from_directory('.', 'admin.html')
 
 @app.route('/api/investments')
 def api_investments():
