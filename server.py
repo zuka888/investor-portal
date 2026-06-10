@@ -4,7 +4,7 @@ from flask_socketio import SocketIO, emit, join_room
 
 app = Flask(__name__, static_folder='.')
 socketio = SocketIO(app, cors_allowed_origins=[
-    'https://investor-portal-production.up.railway.app',
+    'https://investor-portal-production-331a.up.railway.app',
     'https://xddobsobd.netlify.app',
     'http://localhost:3000'
 ], async_mode='eventlet',
